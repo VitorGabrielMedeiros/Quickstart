@@ -17,8 +17,6 @@ public class Drivetrain implements Mechanism {
     double heading;
 
     public Drivetrain() {
-        frontLeft.setDirection(NextMotor.Direction.REVERSE);
-        backLeft.setDirection(NextMotor.Direction.REVERSE);
         //heading2 = follower.localizer.pose().heading();
     }
 

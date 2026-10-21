@@ -30,4 +30,28 @@ public class Robot implements NextRobot {
         return Set.of(intake,drivetrain,flower,hood,lock,shooter,transfer,turret);
     }
 
+    public Turret getTurret() {
+        return turret;
+    }
+    public Hood getHood() {
+        return hood;
+    }
+
+    public Shooter getShooter() {
+        return shooter;
+    }
+    public Intake getIntake() {
+        return intake;
+    }
+
+    public Transfer getTransfer() {
+        return transfer;
+    }
+
+    public ServoLock getLock() {
+        return lock;
+    }
+//    public FlowerTake getFlower() {
+//        return flower;
+//    }
 }
