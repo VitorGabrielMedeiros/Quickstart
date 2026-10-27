@@ -14,7 +14,7 @@ public class shooterbangbang extends LinearOpMode {
     private DcMotorEx shooter;
     private DcMotorEx shooter1;
     // MECANICA: ajuste para o seu robo
-    static final double FLYWHEEL_RPM = 12000.0;
+    static final double FLYWHEEL_RPM = 2800;
 
     // RPM do motor / RPM do flywheel
     // 1.0 = acionamento direto, 1:1
@@ -24,13 +24,13 @@ public class shooterbangbang extends LinearOpMode {
     static final double TICKS_PER_MOTOR_REV = 28.0;
 
     // Controle
-    static final double HYSTERESIS = 0.05;
-    static final double HIGH_POWER = 0.95;
-    static final double HOLD_POWER = 0.83;
+    static final double HYSTERESIS = 0.03;
+    static final double HIGH_POWER = 0.67;
+    static final double HOLD_POWER = 0.58;
 
     // Limite inicial de velocidade do motor
     // Verifique os limites mecanicos antes de usar.
-    static final double MAX_RPM = 12000.0;
+    static final double MAX_RPM = 6000;
 
     @Override
     public void runOpMode() {
@@ -43,7 +43,7 @@ public class shooterbangbang extends LinearOpMode {
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        shooter1.setDirection(DcMotor.Direction.FORWARD);
+        shooter1.setDirection(DcMotor.Direction.REVERSE);
 
         shooter.setZeroPowerBehavior(
                 DcMotor.ZeroPowerBehavior.FLOAT
