@@ -51,9 +51,6 @@ public class Turret implements Mechanism {
         return turretAngle;
     }
 
-
-
-
     public double conversor(double degrees){
         posServo =  0.00241667 * degrees +0;
         return posServo;
