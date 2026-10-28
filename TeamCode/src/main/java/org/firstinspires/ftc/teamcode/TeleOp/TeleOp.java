@@ -18,7 +18,6 @@ import dev.nextftc.robot.opmode.NextTeleop;
 public class TeleOp extends NextOpMode {
 
     private final Robot robot;
-
     public Follower follower;
     public final PoseFactory start = PoseFactory.radians();
     private final Pose startPose = start.of(133.34375,7.5,Math.toRadians(90));
@@ -34,6 +33,11 @@ public class TeleOp extends NextOpMode {
 
     private double xHive;
     private double yHive;
+    public double lastHeading;
+    public double voltas;
+    public double delta;
+    public double anguloTotal;
+
 
     public TeleOp(Robot robot) {
         super(robot);
@@ -44,37 +48,51 @@ public class TeleOp extends NextOpMode {
     @Override
     public void periodic() {
 
+
         // Atualiza a estimativa de pose do Pedro
         follower.update();
 
         // Le a posicao e a orientacao do robo
         xRobot = follower.pose().x();
         yRobot = follower.pose().y();
-        heading = follower.pose().heading();
+        heading = Math.toDegrees(follower.pose().heading());
+
+        delta = heading - lastHeading;
+
+        if (delta < -180) {
+            voltas = voltas + 1;
+        }
+        if (delta > 180) {
+            voltas = voltas - 1;
+        }
+
+        anguloTotal = heading + (voltas * 360);
 
         // Escolhe o alvo
         if (yRobot > 70.5) {
             xHive = 84;
-            yHive = 86;
+            yHive = 88;
         } else {
             xHive = 84;
             yHive = 55;
         }
 
-        robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, heading);
+        robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);
 
         servo1.setPosition(1-(robot.getTurret().getTurretServo()));
-        servo2.setPosition(1- (robot.getTurret().getTurretServo()));
+        servo2.setPosition(1-(robot.getTurret().getTurretServo()));
 
         Telemetry.log("Status", "Running");
         Telemetry.log("Robot X", xRobot);
         Telemetry.log("Robot Y", yRobot);
         Telemetry.log("servoPos", robot.getTurret().getTurretServo());
         Telemetry.log("theta" , robot.getTurret().getFieldAngleDegrees());
-        Telemetry.log("Heading", Math.toDegrees(heading));
+        Telemetry.log("Heading",anguloTotal);
         Telemetry.log("Turret Angle", robot.getTurret().getTurretAngleDegrees());
 
         Telemetry.update();
+
+        lastHeading = heading;
     }
 
     @Override
