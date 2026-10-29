@@ -13,6 +13,7 @@ import dev.nextftc.hardware.actuators.NextServo;
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
+import dev.nextftc.robot.triggers.CommandGamepad;
 
 @NextTeleop(name = "TeleOp")
 public class TeleOp extends NextOpMode {
@@ -37,6 +38,7 @@ public class TeleOp extends NextOpMode {
     public double voltas;
     public double delta;
     public double anguloTotal;
+    CommandGamepad gp2 = new CommandGamepad(gamepad2);
 
 
     public TeleOp(Robot robot) {
@@ -97,6 +99,8 @@ public class TeleOp extends NextOpMode {
 
     @Override
     public void start() {
+        robot.getLock().lock().start();
+
         servo1 = hardwareMap.get(Servo.class, "servo1");
         servo2 = hardwareMap.get(Servo.class, "servo2");
         follower = Constants.create(hardwareMap);
@@ -104,5 +108,12 @@ public class TeleOp extends NextOpMode {
         follower.update();
 
         robot.drivetrain.startDrive(gamepad1, follower);
+
+
+        gp2.leftBumper().whileTrue(robot.getIntake().in().with(robot.getTransfer().in()));
+        gp2.leftBumper().whileFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
+
+
+
     }
 }

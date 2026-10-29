@@ -39,17 +39,17 @@ public class MovNoField extends LinearOpMode {
         frontRightDrive = hardwareMap.get(DcMotor.class, "fr");
         backRightDrive = hardwareMap.get(DcMotor.class, "br");
 
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-        transfer = hardwareMap.get(DcMotorEx.class, "transfer");
+//        intake = hardwareMap.get(DcMotorEx.class, "intake");
+//        transfer = hardwareMap.get(DcMotorEx.class, "transfer");
+//
+//        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+//        shooter1 = hardwareMap.get(DcMotorEx.class, "shooter1");
 
-        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        shooter1 = hardwareMap.get(DcMotorEx.class, "shooter1");
-
-        shooter1.setDirection(DcMotorEx.Direction.FORWARD);
-
-
+//        shooter1.setDirection(DcMotorEx.Direction.FORWARD);
+//
+//
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
 
 
         frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -67,25 +67,25 @@ public class MovNoField extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            if (gamepad2.right_bumper){
-                intake.setPower(1);
-                transfer.setPower(1);
-            } else if (gamepad2.left_bumper){
-                intake.setPower(-1);
-                transfer.setPower(-1);
-            } else {
-                intake.setPower(0);
-                transfer.setPower(0);
-            }
+//            if (gamepad2.right_bumper){
+//                intake.setPower(1);
+//                transfer.setPower(1);
+//            } else if (gamepad2.left_bumper){
+//                intake.setPower(-1);
+//                transfer.setPower(-1);
+//            } else {
+//                intake.setPower(0);
+//                transfer.setPower(0);
+//            }
 
-            if(gamepad2.a){
-                shooter.setPower(potencia);
-                shooter1.setPower(potencia);
-            } else {
-                shooter.setPower(0);
-                shooter1.setPower(0);
-
-            }
+//            if(gamepad2.a){
+//                shooter.setPower(potencia);
+//                shooter1.setPower(potencia);
+//            } else {
+//                shooter.setPower(0);
+//                shooter1.setPower(0);
+//
+//            }
 
 
 

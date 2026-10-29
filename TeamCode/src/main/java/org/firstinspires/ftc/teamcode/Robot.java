@@ -51,7 +51,7 @@ public class Robot implements NextRobot {
     public ServoLock getLock() {
         return lock;
     }
-//    public FlowerTake getFlower() {
-//        return flower;
-//    }
+    public Flowertake getFlower() {
+        return flower;
+    }
 }

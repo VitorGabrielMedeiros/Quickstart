@@ -1,11 +1,12 @@
 
 package org.firstinspires.ftc.teamcode.Teste;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-
+@Config
 @TeleOp(name = "Shooter Bang Bang" , group = "LinearOpMode")
 public class shooterbangbang extends LinearOpMode {
 
@@ -14,7 +15,7 @@ public class shooterbangbang extends LinearOpMode {
     private DcMotorEx shooter;
     private DcMotorEx shooter1;
     // MECANICA: ajuste para o seu robo
-    static final double FLYWHEEL_RPM = 2800;
+    public static double FLYWHEEL_RPM = 2800;
 
     // RPM do motor / RPM do flywheel
     // 1.0 = acionamento direto, 1:1
@@ -24,13 +25,13 @@ public class shooterbangbang extends LinearOpMode {
     static final double TICKS_PER_MOTOR_REV = 28.0;
 
     // Controle
-    static final double HYSTERESIS = 0.03;
-    static final double HIGH_POWER = 0.67;
-    static final double HOLD_POWER = 0.58;
+    public static double HYSTERESIS = 0.03;
+    public static double HIGH_POWER = 0.67;
+    public static double HOLD_POWER = 0.58;
 
     // Limite inicial de velocidade do motor
-    // Verifique os limites mecanicos antes de usar.
-    static final double MAX_RPM = 6000;
+    // Verifique os limites mecanicos ante"s de usar.
+    public static final double MAX_RPM = 6000;
 
     @Override
     public void runOpMode() {
@@ -128,9 +129,10 @@ public class shooterbangbang extends LinearOpMode {
             telemetry.update();
             if (gamepad1.right_bumper) {
                 intake.setPower(1);
-                transfer.setPower(1);
+                transfer.setPower(-1);
+
             } else if (gamepad2.left_bumper) {
-                intake.setPower(-1);
+                intake.setPower(1);
                 transfer.setPower(-1);
             } else {
                 intake.setPower(0);
