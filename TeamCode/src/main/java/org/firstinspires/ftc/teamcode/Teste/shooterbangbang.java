@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 @Config
 @TeleOp(name = "Shooter Bang Bang" , group = "LinearOpMode")
 public class shooterbangbang extends LinearOpMode {
@@ -15,7 +17,7 @@ public class shooterbangbang extends LinearOpMode {
     private DcMotorEx shooter;
     private DcMotorEx shooter1;
     // MECANICA: ajuste para o seu robo
-    public static double FLYWHEEL_RPM = 2800;
+    public static double FLYWHEEL_RPM = 2960;
 
     // RPM do motor / RPM do flywheel
     // 1.0 = acionamento direto, 1:1
@@ -26,8 +28,8 @@ public class shooterbangbang extends LinearOpMode {
 
     // Controle
     public static double HYSTERESIS = 0.03;
-    public static double HIGH_POWER = 0.67;
-    public static double HOLD_POWER = 0.58;
+    public static double HIGH_POWER = 0.69;
+    public static double HOLD_POWER = 0.66;
 
     // Limite inicial de velocidade do motor
     // Verifique os limites mecanicos ante"s de usar.
@@ -44,6 +46,7 @@ public class shooterbangbang extends LinearOpMode {
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        shooter.setDirection(DcMotor.Direction.REVERSE);
         shooter1.setDirection(DcMotor.Direction.REVERSE);
 
         shooter.setZeroPowerBehavior(

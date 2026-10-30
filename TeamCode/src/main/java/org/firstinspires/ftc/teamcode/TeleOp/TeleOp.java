@@ -113,6 +113,9 @@ public class TeleOp extends NextOpMode {
         gp2.leftBumper().whileTrue(robot.getIntake().in().with(robot.getTransfer().in()));
         gp2.leftBumper().whileFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
 
+        gp2.y().whileTrue(robot.getIntake().out());
+        gp2.y().whileFalse(robot.getIntake().stop());
+
 
 
     }
