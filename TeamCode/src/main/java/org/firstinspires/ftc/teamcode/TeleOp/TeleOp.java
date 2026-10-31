@@ -4,6 +4,7 @@ import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
+import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Turret;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
@@ -31,6 +32,7 @@ public class TeleOp extends NextOpMode {
     private double xRobot;
     private double yRobot;
     private double heading;
+    public double currentDistance;
 
     private double xHive;
     private double yHive;
@@ -38,7 +40,12 @@ public class TeleOp extends NextOpMode {
     public double voltas;
     public double delta;
     public double anguloTotal;
+    public double flywheel;
     CommandGamepad gp2 = new CommandGamepad(gamepad2);
+    public double autoshoot(double distancia){
+         flywheel = 0.15625 * Math.pow(distancia, 2) - 15.3125 * distancia + 1924.53125;
+         return -flywheel;
+    }
 
 
     public TeleOp(Robot robot) {
@@ -51,13 +58,16 @@ public class TeleOp extends NextOpMode {
     public void periodic() {
 
 
+
         // Atualiza a estimativa de pose do Pedro
         follower.update();
+        currentDistance = follower.pose().distance(new Pose(xHive, yHive));
 
         // Le a posicao e a orientacao do robo
         xRobot = follower.pose().x();
         yRobot = follower.pose().y();
         heading = Math.toDegrees(follower.pose().heading());
+
 
         delta = heading - lastHeading;
 
@@ -79,6 +89,8 @@ public class TeleOp extends NextOpMode {
             yHive = 55;
         }
 
+        robot.getShooter().setSetPoint(autoshoot(currentDistance));
+
         robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);
 
         servo1.setPosition(1-(robot.getTurret().getTurretServo()));
@@ -91,6 +103,7 @@ public class TeleOp extends NextOpMode {
         Telemetry.log("theta" , robot.getTurret().getFieldAngleDegrees());
         Telemetry.log("Heading",anguloTotal);
         Telemetry.log("Turret Angle", robot.getTurret().getTurretAngleDegrees());
+        Telemetry.log("flywheel", flywheel);
 
         Telemetry.update();
 
