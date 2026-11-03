@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.TeleOp;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
 import com.pedropathing.api.PoseFactory;
@@ -43,6 +44,7 @@ public class TeleOp extends NextOpMode {
     private double yRobot;
     private double heading;
     public double currentDistance;
+    public double currentPose;
 
     private double xHive;
     private double yHive;
@@ -53,7 +55,7 @@ public class TeleOp extends NextOpMode {
     public double flywheel;
     public double turretAngle;
     CommandGamepad gp2 = new CommandGamepad(gamepad2);
-    Command delay = waitMs(50);
+    Command delay = waitMs(300);
 
     public static double posMaior = 2020;
     public static double posMenor = 500;
@@ -72,6 +74,7 @@ public class TeleOp extends NextOpMode {
     @Override
     public void periodic() {
 
+
         // Atualiza a estimativa de pose do Pedro
         follower.update();
         DrivePowers powers = ManualDrive.fieldCentric(
@@ -82,6 +85,7 @@ public class TeleOp extends NextOpMode {
         );
         follower.manual(powers);
         currentDistance = follower.pose().distance(new Pose(xHive, yHive));
+
 
         // Le a posicao e a orientacao do robo
         xRobot = follower.pose().x();
@@ -111,7 +115,7 @@ public class TeleOp extends NextOpMode {
             yHive = 55;
         }
 
-        robot.getShooter().setSetPoint(autoshoot(currentDistance));
+        //robot.getShooter().setSetPoint(autoshoot(currentDistance));
         robot.getLock().lock().schedule();
 
         robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);
@@ -126,7 +130,9 @@ public class TeleOp extends NextOpMode {
         Telemetry.log("theta" , robot.getTurret().getFieldAngleDegrees());
         Telemetry.log("Heading",anguloTotal);
         Telemetry.log("Turret Angle", robot.getTurret().getTurretAngleDegrees());
+        Telemetry.log("distancia", currentDistance);
         Telemetry.log("flywheel", flywheel);
+        Telemetry.log("Shooter (ticks/s)", robot.getShooter().getVel());
 
         Telemetry.update();
 
@@ -140,6 +146,7 @@ public class TeleOp extends NextOpMode {
 
         servo1 = hardwareMap.get(Servo.class, "servo1");
         servo2 = hardwareMap.get(Servo.class, "servo2");
+        //currentPose = follower.pose();
         follower = Constants.create(hardwareMap);
 
         follower.setPose(startPose);
@@ -166,23 +173,32 @@ public class TeleOp extends NextOpMode {
                 new PwmControl.PwmRange(posMenor, posMaior)
         );
 
-//        Command shootDeFrente = sequential(
-//                robot.getTransfer().in().with(robot.getTransfer().in()),
-//                delay,
-//                robot.getTransfer().in().with(robot.getTransfer().in()),
-//                delay,
-//                robot.getIntake().stop().with(robot.getTransfer().stop())
-//        );
+        Command Shoot = sequential(
+                robot.getLock().unlock(),
+                robot.getIntake().in().with(robot.getTransfer().in()),
+                delay,
+                robot.getIntake().stop().with(robot.getTransfer().stop())
+        );
+
+        Command noShoot = parallel(
+                robot.getLock().lock(),
+                robot.getIntake().stop().with(robot.getTransfer().stop())
+        );
+
+
+        gp2.rightBumper().whileTrue(Shoot);
+        gp2.rightBumper().whileFalse(noShoot);
+
+//        if (gamepad1.a){
 //
-//        Command shootRapid = sequential(
-//                robot.getIntake().in().with(robot.getTransfer().in())
-//
-//        );
+//        }
+        //gp2.rightBumper().whileFalse(robot.getIntake().stop().with(robot.getTransfer().stop().with(robot.getLock().lock())));
 
 
 
 
-//        
+
+
 
 
 

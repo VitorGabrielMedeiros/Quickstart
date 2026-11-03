@@ -28,12 +28,12 @@ public class Shooter implements Mechanism {
     public static double setpoint = -1600.0;
 
     // Ganhos PID
-    public static double kp = 0.000047;
+    public static double kp = 0.00003;
     public static double ki = 0.0;
-    public static double kd = 0.000003;
+    public static double kd = 0.000000;
     public static double kv = 0.000038;
     public static double ks = 0.00055;
-    public static double ka = 0.08;
+    public static double ka = 0.000;
     double xHive = 84;
     double yHive = 70.94;
     public final PoseFactory start = PoseFactory.radians();
@@ -58,9 +58,9 @@ public class Shooter implements Mechanism {
         setpoint = potencia;
     }
 
-    public double getVel(NextMotor motor) {
+    public double getVel() {
 
-        double velocityDegrees = motor.getEncoderVelocity().getMagnitude();
+        double velocityDegrees = shooter.getEncoderVelocity().getMagnitude();
         double degreesPerTick = 360.0 / TICK_PER_REV;
         return velocityDegrees / degreesPerTick;
     }
@@ -95,7 +95,10 @@ public class Shooter implements Mechanism {
 
             shooter.update();
             shooter1.update();
+
+
     }
+
 
 
 

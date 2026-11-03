@@ -1,4 +1,4 @@
-
+/*
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import static dev.nextftc.units.Units.Degrees;
@@ -26,15 +26,15 @@ public class PID extends NextOpMode {
     public static double TICK_PER_REV = 34;
 
     // Setpoint em ticks/s
-    public static double setpoint = -1600.0;
+    public static double setpoint = 0;
 
     // Ganhos PID
-    public static double kp = 0.000047;
+    public static double kp = 0,00003;
     public static double ki = 0.0;
-    public static double kd = 0.000003;
-    public static double kv = 0.000038;
-    public static double ks = 0.00055;
-    public static double ka = 0.08;
+    public static double kd = 0.000000;
+    public static double kv = 0,000038;
+    public static double ks = 0,00055;
+    public static double ka = 0.000;
     double xHive = 84;
     double yHive = 70.94;
     public final PoseFactory start = PoseFactory.radians();
@@ -72,27 +72,22 @@ public class PID extends NextOpMode {
         follower.update();
         currentDistance = follower.pose().distance(new Pose(xHive, yHive));
 
+        shooter.getVelocityConstants()
+                .withP(kp)
+                .withI(ki)
+                .withD(kd)
+                .withV(kv)
+                .withA(ka)
+                .withS(ks);
+
+        double velocityAngle = ticksToDegrees(setpoint);
+
+        shooter.setVelocitySetpoint(DegreesPerSecond.of(velocityAngle));
+
+        shooter1.follow(shooter);
+
 
         // Shooter
-        if (gamepad1.a) {
-
-            double velocityAngle = ticksToDegrees(setpoint);
-
-            shooter.setVelocitySetpoint(DegreesPerSecond.of(velocityAngle));
-
-            shooter1.setVelocitySetpoint(DegreesPerSecond.of(velocityAngle));
-
-            shooter.update();
-            shooter1.update();
-
-        } else {
-
-            shooter.setThrottle(0.0);
-            shooter1.setThrottle(0.0);
-
-            shooter.update();
-            shooter1.update();
-        }
 
         // Intake
         if (gamepad1.right_bumper) {
@@ -117,23 +112,7 @@ public class PID extends NextOpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
         follower.update();
-        shooter.getVelocityConstants()
-                .withP(kp)
-                .withI(ki)
-                .withD(kd)
-                .withV(kv)
-                .withA(ka)
-                .withS(ks);
-
-        shooter1.getVelocityConstants()
-                .withP(kp)
-                .withI(ki)
-                .withD(kd)
-                .withV(kv)
-                .withA(ka)
-                .withS(ks);
-
-
 
     }
 }
+*/
