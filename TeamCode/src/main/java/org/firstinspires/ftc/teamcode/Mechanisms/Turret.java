@@ -3,10 +3,12 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 
 //import com.bylazar.configurables.annotations.Configurable;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import dev.nextftc.hardware.actuators.NextServo;
 import dev.nextftc.robot.Mechanism;
 
-//@Configurable
+@Config
 public class Turret implements Mechanism {
 
     private final NextServo servo1 = new NextServo("servo1");
@@ -32,6 +34,7 @@ public class Turret implements Mechanism {
     private double targetX;
     private double targetY;
     private double heading;
+    public static double desmos = 0.00277778;
 
     public double lastServoPos;
     private double fieldAngle;
@@ -52,7 +55,7 @@ public class Turret implements Mechanism {
     }
 
     public double conversor(double degrees){
-        posServo =  0.00241667 * degrees +0;
+        posServo = desmos * degrees + 0;
         return posServo;
     }
 

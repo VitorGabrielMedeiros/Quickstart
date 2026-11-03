@@ -51,6 +51,7 @@ public class PID extends NextOpMode {
 
     private  final NextMotor transfer = new NextMotor("transfer");
 
+
     public PID(Robot robot) {
         super(robot);
     }
@@ -72,22 +73,6 @@ public class PID extends NextOpMode {
         currentDistance = follower.pose().distance(new Pose(xHive, yHive));
 
 
-        shooter.getVelocityConstants()
-                .withP(kp)
-                .withI(ki)
-                .withD(kd)
-                .withV(kv)
-                .withA(ka)
-                .withS(ks);
-
-        shooter1.getVelocityConstants()
-                .withP(kp)
-                .withI(ki)
-                .withD(kd)
-                .withV(kv)
-                .withA(ka)
-                .withS(ks);
-
         // Shooter
         if (gamepad1.a) {
 
@@ -102,8 +87,11 @@ public class PID extends NextOpMode {
 
         } else {
 
-            shooter.setThrottle(0);
-            shooter1.setThrottle(0);
+            shooter.setThrottle(0.0);
+            shooter1.setThrottle(0.0);
+
+            shooter.update();
+            shooter1.update();
         }
 
         // Intake
@@ -129,6 +117,22 @@ public class PID extends NextOpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
         follower.update();
+        shooter.getVelocityConstants()
+                .withP(kp)
+                .withI(ki)
+                .withD(kd)
+                .withV(kv)
+                .withA(ka)
+                .withS(ks);
+
+        shooter1.getVelocityConstants()
+                .withP(kp)
+                .withI(ki)
+                .withD(kd)
+                .withV(kv)
+                .withA(ka)
+                .withS(ks);
+
 
 
     }

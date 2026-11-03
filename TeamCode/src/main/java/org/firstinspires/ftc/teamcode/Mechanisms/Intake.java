@@ -10,11 +10,10 @@ public class Intake implements Mechanism {
     private final NextMotor motor = new NextMotor("intake");
 
     public Command in() {
-        return infinite(() -> motor.setThrottle(-1.0));
+        return infinite(() -> motor.setThrottle(1.0));
     }
 
-    public Command out() {
-        return infinite(() -> motor.setThrottle(1.0));
+    public Command out() {return infinite(() -> motor.setThrottle(-1.0));
     }
 
     public Command stop() {

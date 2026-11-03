@@ -1,7 +1,13 @@
 
 package org.firstinspires.ftc.teamcode.TeleOp;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+
 import com.pedropathing.api.PoseFactory;
+import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.follower.ManualDrive;
+import com.pedropathing.ivy.Command;
 import com.pedropathing.math.Pose;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
@@ -9,7 +15,11 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Turret;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
+
 import dev.nextftc.hardware.actuators.NextServo;
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextOpMode;
@@ -41,7 +51,12 @@ public class TeleOp extends NextOpMode {
     public double delta;
     public double anguloTotal;
     public double flywheel;
+    public double turretAngle;
     CommandGamepad gp2 = new CommandGamepad(gamepad2);
+    Command delay = waitMs(50);
+
+    public static double posMaior = 2020;
+    public static double posMenor = 500;
     public double autoshoot(double distancia){
          flywheel = 0.15625 * Math.pow(distancia, 2) - 15.3125 * distancia + 1924.53125;
          return -flywheel;
@@ -57,16 +72,23 @@ public class TeleOp extends NextOpMode {
     @Override
     public void periodic() {
 
-
-
         // Atualiza a estimativa de pose do Pedro
         follower.update();
+        DrivePowers powers = ManualDrive.fieldCentric(
+                gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
+                -gamepad1.right_stick_x,
+                follower.pose().heading()
+        );
+        follower.manual(powers);
         currentDistance = follower.pose().distance(new Pose(xHive, yHive));
 
         // Le a posicao e a orientacao do robo
         xRobot = follower.pose().x();
         yRobot = follower.pose().y();
         heading = Math.toDegrees(follower.pose().heading());
+
+        //turretAngle = robot.getTurret().getTurretAngleDegrees();
 
 
         delta = heading - lastHeading;
@@ -90,6 +112,7 @@ public class TeleOp extends NextOpMode {
         }
 
         robot.getShooter().setSetPoint(autoshoot(currentDistance));
+        robot.getLock().lock().schedule();
 
         robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);
 
@@ -110,24 +133,57 @@ public class TeleOp extends NextOpMode {
         lastHeading = heading;
     }
 
+
+
     @Override
     public void start() {
-        robot.getLock().lock().start();
 
         servo1 = hardwareMap.get(Servo.class, "servo1");
         servo2 = hardwareMap.get(Servo.class, "servo2");
         follower = Constants.create(hardwareMap);
+
         follower.setPose(startPose);
         follower.update();
 
-        robot.drivetrain.startDrive(gamepad1, follower);
+        //robot.drivetrain.startDrive(gamepad1, follower);
+
+        follower.update();
 
 
+        //intake + transfer
         gp2.leftBumper().whileTrue(robot.getIntake().in().with(robot.getTransfer().in()));
         gp2.leftBumper().whileFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
 
-        gp2.y().whileTrue(robot.getIntake().out());
-        gp2.y().whileFalse(robot.getIntake().stop());
+
+        //inverse
+        gp2.y().whileTrue(robot.getIntake().out().with(robot.getTransfer().out()));
+        gp2.y().whileFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
+
+        ((ServoImplEx) servo1).setPwmRange(
+                new PwmControl.PwmRange(posMenor, posMaior)
+        );
+        ((ServoImplEx) servo2).setPwmRange(
+                new PwmControl.PwmRange(posMenor, posMaior)
+        );
+
+//        Command shootDeFrente = sequential(
+//                robot.getTransfer().in().with(robot.getTransfer().in()),
+//                delay,
+//                robot.getTransfer().in().with(robot.getTransfer().in()),
+//                delay,
+//                robot.getIntake().stop().with(robot.getTransfer().stop())
+//        );
+//
+//        Command shootRapid = sequential(
+//                robot.getIntake().in().with(robot.getTransfer().in())
+//
+//        );
+
+
+
+
+//        
+
 
 
 

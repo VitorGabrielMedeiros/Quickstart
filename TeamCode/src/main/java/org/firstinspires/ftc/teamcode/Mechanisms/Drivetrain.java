@@ -15,8 +15,10 @@ public class Drivetrain implements Mechanism {
     public final NextMotor backRight = new NextMotor("br");
     double heading;
 
+
     public Drivetrain() {
         //heading2 = follower.localizer.pose().heading();
+
     }
 
 
