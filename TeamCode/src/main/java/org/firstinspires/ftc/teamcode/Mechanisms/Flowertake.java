@@ -15,4 +15,9 @@ public class Flowertake implements Mechanism {
     public Command abaixado2() {return  infinite(() -> flower2.setPosition(1.0));}
     public Command levantado2() {return infinite(() -> flower2.setPosition(0.0));}
     public Command defense2() {return infinite(() -> flower1.setPosition(0.5));}
+
+    @Override
+    public void periodic(){
+    }
+
 }

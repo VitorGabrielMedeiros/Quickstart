@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.TeleOp;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
+import static com.pedropathing.ivy.groups.Groups.loop;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
@@ -22,6 +23,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import dev.nextftc.hardware.actuators.NextServo;
+import dev.nextftc.hardware.sensors.NextColorDistanceSensor;
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
@@ -29,6 +31,8 @@ import dev.nextftc.robot.triggers.CommandGamepad;
 
 @NextTeleop(name = "TeleOp")
 public class TeleOp extends NextOpMode {
+
+    private  final NextColorDistanceSensor sensorC = new NextColorDistanceSensor("sensorC");
 
     private final Robot robot;
     public Follower follower;
@@ -105,6 +109,16 @@ public class TeleOp extends NextOpMode {
         }
 
         anguloTotal = heading + (voltas * 360);
+        if(gamepad2.left_bumper){
+            if (sensorC.getColor().getGreen() > 0.6) {
+                robot.getTransfer().setPower(0);
+            }else{
+                robot.getTransfer().setPower(1);
+            }
+        }else{
+            robot.getTransfer().setPower(0);
+        }
+
 
         // Escolhe o alvo
         if (yRobot > 70.5) {
@@ -116,7 +130,8 @@ public class TeleOp extends NextOpMode {
         }
 
         robot.getShooter().setSetPoint(autoshoot(currentDistance));
-        robot.getLock().lock().schedule();
+
+        sensorC.update();
 
         robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);
 
@@ -133,6 +148,8 @@ public class TeleOp extends NextOpMode {
         Telemetry.log("distancia", currentDistance);
         Telemetry.log("flywheel", flywheel);
         Telemetry.log("Shooter (ticks/s)", robot.getShooter().getVel());
+        Telemetry.log("SensorC", sensorC.getColor());
+
 
         Telemetry.update();
 
@@ -143,9 +160,11 @@ public class TeleOp extends NextOpMode {
 
     @Override
     public void start() {
+        robot.getLock().unlock().schedule();
 
         servo1 = hardwareMap.get(Servo.class, "servo1");
         servo2 = hardwareMap.get(Servo.class, "servo2");
+
         //currentPose = follower.pose();
         follower = Constants.create(hardwareMap);
 
@@ -158,9 +177,8 @@ public class TeleOp extends NextOpMode {
 
 
         //intake + transfer
-        gp2.leftBumper().whileTrue(robot.getIntake().in().with(robot.getTransfer().in()));
+        gp2.leftBumper().whileTrue(robot.getIntake().in().with(robot.getLock().unlock()));
         gp2.leftBumper().whileFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
-
 
         //inverse
         gp2.y().whileTrue(robot.getIntake().out().with(robot.getTransfer().out()));
@@ -174,20 +192,20 @@ public class TeleOp extends NextOpMode {
         );
 
         Command Shoot = sequential(
-                robot.getLock().unlock(),
+                robot.getLock().lock(),
                 robot.getIntake().in().with(robot.getTransfer().in()),
                 delay,
                 robot.getIntake().stop().with(robot.getTransfer().stop())
         );
 
         Command noShoot = parallel(
-                robot.getLock().lock(),
+                robot.getLock().unlock(),
                 robot.getIntake().stop().with(robot.getTransfer().stop())
         );
 
 
-        gp2.rightBumper().whileTrue(Shoot);
-        gp2.rightBumper().whileFalse(noShoot);
+        gp2.rightBumper().toggleOnTrue(Shoot);
+        gp2.rightBumper().toggleOnFalse(noShoot);
 
 //        if (gamepad1.a){
 //

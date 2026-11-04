@@ -35,7 +35,7 @@ public class Constants {
             c -> {
                 c.name.set("pinpoint");
                 c.xPodOffset.set(-3.77);
-                c.yPodOffset.set(3.215);
+                c.yPodOffset.set(-3.215);
                 c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
                 c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD);
             }
