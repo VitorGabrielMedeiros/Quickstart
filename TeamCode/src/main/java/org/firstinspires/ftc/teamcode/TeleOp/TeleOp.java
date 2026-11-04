@@ -60,7 +60,7 @@ public class TeleOp extends NextOpMode {
     public static double posMaior = 2020;
     public static double posMenor = 500;
     public double autoshoot(double distancia){
-         flywheel = 0.15625 * Math.pow(distancia, 2) - 15.3125 * distancia + 1924.53125;
+         flywheel = 0.199998 * Math.pow(distancia, 2) - 15.49506 * distancia + 1875.91028;
          return -flywheel;
     }
 
@@ -115,7 +115,7 @@ public class TeleOp extends NextOpMode {
             yHive = 55;
         }
 
-        //robot.getShooter().setSetPoint(autoshoot(currentDistance));
+        robot.getShooter().setSetPoint(autoshoot(currentDistance));
         robot.getLock().lock().schedule();
 
         robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);

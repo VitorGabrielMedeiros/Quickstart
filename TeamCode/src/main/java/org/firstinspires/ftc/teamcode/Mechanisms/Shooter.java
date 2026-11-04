@@ -28,10 +28,10 @@ public class Shooter implements Mechanism {
     public static double setpoint = -1600.0;
 
     // Ganhos PID
-    public static double kp = 0.00003;
+    public static double kp = 0.000087;
     public static double ki = 0.0;
     public static double kd = 0.000000;
-    public static double kv = 0.000038;
+    public static double kv = 0.000034;
     public static double ks = 0.00055;
     public static double ka = 0.000;
     double xHive = 84;
