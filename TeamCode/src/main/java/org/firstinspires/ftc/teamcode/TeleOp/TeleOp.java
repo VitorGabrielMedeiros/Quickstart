@@ -38,6 +38,7 @@ public class TeleOp extends NextOpMode {
     public Follower follower;
     public final PoseFactory start = PoseFactory.radians();
     private final Pose startPose = start.of(133.34375,7.5,Math.toRadians(90));
+    public Pose poseReset = new Pose (106, 7.5, Math.toRadians(90));
     private Servo servo1;
     private Servo servo2;
 
@@ -49,7 +50,6 @@ public class TeleOp extends NextOpMode {
     private double heading;
     public double currentDistance;
     public double currentPose;
-
     private double xHive;
     private double yHive;
     public double lastHeading;
@@ -115,8 +115,10 @@ public class TeleOp extends NextOpMode {
             }else{
                 robot.getTransfer().setPower(1);
             }
-        }else{
-            robot.getTransfer().setPower(0);
+        }
+
+        if(gamepad1.a || gamepad2.a){
+            follower.setPose(poseReset);
         }
 
 
@@ -178,11 +180,13 @@ public class TeleOp extends NextOpMode {
 
         //intake + transfer
         gp2.leftBumper().whileTrue(robot.getIntake().in().with(robot.getLock().unlock()));
-        gp2.leftBumper().whileFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
+        gp2.leftBumper().toggleOnFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
 
         //inverse
         gp2.y().whileTrue(robot.getIntake().out().with(robot.getTransfer().out()));
-        gp2.y().whileFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
+        gp2.y().toggleOnFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
+
+
 
         ((ServoImplEx) servo1).setPwmRange(
                 new PwmControl.PwmRange(posMenor, posMaior)
@@ -193,19 +197,31 @@ public class TeleOp extends NextOpMode {
 
         Command Shoot = sequential(
                 robot.getLock().lock(),
+                robot.getFlower().ServoShoot().with(robot.getFlower().ServoShoot1()),
                 robot.getIntake().in().with(robot.getTransfer().in()),
                 delay,
-                robot.getIntake().stop().with(robot.getTransfer().stop())
+                robot.getIntake().stop().with(robot.getTransfer().stop()),
+                robot.getFlower().levantado().with(robot.getFlower().levantado1())
         );
 
         Command noShoot = parallel(
                 robot.getLock().unlock(),
-                robot.getIntake().stop().with(robot.getTransfer().stop())
+                robot.getIntake().stop().with(robot.getTransfer().stop()),
+                robot.getFlower().levantado().with(robot.getFlower().levantado1())
         );
 
 
-        gp2.rightBumper().toggleOnTrue(Shoot);
-        gp2.rightBumper().toggleOnFalse(noShoot);
+        gp2.rightBumper().toggleOnTrue(Shoot.with(robot.getIntake().in()).with(robot.getTransfer().in()));
+        gp2.rightBumper().toggleOnFalse(noShoot.with(robot.getIntake().stop()).with(robot.getTransfer().stop()));
+
+
+        gp2.leftTrigger().isOver(0.000001).whileTrue(robot.getFlower().flower().with(robot.getFlower().flower1()));
+        gp2.leftTrigger().isOver(0.000001).whileFalse(robot.getFlower().levantado().with(robot.getFlower().levantado1()));
+
+        gp2.rightTrigger().isOver(0.000001).whileTrue(robot.getFlower().defense().with(robot.getFlower().defense1()));
+        gp2.rightTrigger().isOver(0.000001).whileFalse(robot.getFlower().levantado().with(robot.getFlower().levantado1()));
+
+
 
 //        if (gamepad1.a){
 //
