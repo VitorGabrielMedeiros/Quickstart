@@ -10,8 +10,8 @@ public class ServoLock implements Mechanism {
 
     private final NextServo servo = new NextServo("lock");
 
-    private static final double LOCK_POSITION = 0.3;
-    private static final double UNLOCK_POSITION = 0.15;
+    public static double LOCK_POSITION = 0.3;
+    private static double UNLOCK_POSITION = 0.15;
 
     public Command lock() {
         return instant(() -> servo.setPosition(LOCK_POSITION)); // alterar valor para o correto

@@ -1,10 +1,10 @@
-
 package org.firstinspires.ftc.teamcode.TeleOp;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.loop;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
@@ -28,6 +28,7 @@ import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
+@Config
 
 @NextTeleop(name = "TeleOp")
 public class TeleOp extends NextOpMode {
@@ -39,6 +40,7 @@ public class TeleOp extends NextOpMode {
     public final PoseFactory start = PoseFactory.radians();
     private final Pose startPose = start.of(133.34375,7.5,Math.toRadians(90));
     public Pose poseReset = new Pose (106, 7.5, Math.toRadians(90));
+    public static double offSetTurret = 60;
     private Servo servo1;
     private Servo servo2;
 
@@ -60,12 +62,14 @@ public class TeleOp extends NextOpMode {
     public double turretAngle;
     CommandGamepad gp2 = new CommandGamepad(gamepad2);
     Command delay = waitMs(300);
+    Command delayServo = waitMs(100);
+
 
     public static double posMaior = 2020;
     public static double posMenor = 500;
     public double autoshoot(double distancia){
          flywheel = 0.199998 * Math.pow(distancia, 2) - 15.49506 * distancia + 1875.91028;
-         return -flywheel;
+         return (-flywheel-offSetTurret);
     }
 
 
@@ -150,6 +154,7 @@ public class TeleOp extends NextOpMode {
         Telemetry.log("distancia", currentDistance);
         Telemetry.log("flywheel", flywheel);
         Telemetry.log("Shooter (ticks/s)", robot.getShooter().getVel());
+        Telemetry.log("Shooter (ticks/s)", robot.getIntake().getVel());
         Telemetry.log("SensorC", sensorC.getColor());
 
 
@@ -197,6 +202,7 @@ public class TeleOp extends NextOpMode {
 
         Command Shoot = sequential(
                 robot.getLock().lock(),
+                delayServo,
                 robot.getFlower().ServoShoot().with(robot.getFlower().ServoShoot1()),
                 robot.getIntake().in().with(robot.getTransfer().in()),
                 delay,
@@ -239,3 +245,5 @@ public class TeleOp extends NextOpMode {
 
     }
 }
+
+

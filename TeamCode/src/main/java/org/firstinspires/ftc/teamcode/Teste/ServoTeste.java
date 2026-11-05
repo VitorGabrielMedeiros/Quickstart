@@ -24,13 +24,15 @@ public class ServoTeste extends LinearOpMode {
 
     public static double posMaior = 2500;
     public static double posMenor = 500;
+    public static double lock1 = 0.3;
+    public static double unlock = 0.15;
 
     @Override
     public void runOpMode() {
 
         flower1 = hardwareMap.get(Servo.class, "flower1");
         flower2 = hardwareMap.get(Servo.class, "flower2");
-        //lock = hardwareMap.get(Servo.class, "lock");
+        lock = hardwareMap.get(Servo.class, "lock");
 
 
 //        ((ServoImplEx) flower1).setPwmRange(
@@ -45,17 +47,9 @@ public class ServoTeste extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (gamepad1.a) {
-                flower1.setPosition(1-(posHigh));
-                flower2.setPosition(posHigh);
-            } else if (gamepad1.b) {
-                flower1.setPosition(1-(defense));
-                flower2.setPosition(defense);
-            } else if (gamepad1.x) {
-                flower1.setPosition(1-(Posshoot));
-                flower2.setPosition(Posshoot);
+                lock.setPosition(lock1);
             } else {
-                flower1.setPosition(1-(posflower));
-                flower2.setPosition(posflower);
+                lock.setPosition(unlock);
             }
         }
     }

@@ -50,8 +50,8 @@ public class Turret implements Mechanism {
 
         fieldAngle = Math.atan2(dy, dx);
         //posServoGraus = (Math.toDegrees(heading) - turretAngle);
-        turretAngle = ((Math.toDegrees(Math.abs(fieldAngle)) - heading) + 180);
-        return turretAngle;
+        turretAngle = ((Math.toDegrees(fieldAngle) - heading) + 180);
+        return ((turretAngle % 360) + 360) % 360;
     }
 
     public double conversor(double degrees){
