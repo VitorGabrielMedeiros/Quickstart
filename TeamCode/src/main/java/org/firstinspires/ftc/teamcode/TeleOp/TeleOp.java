@@ -5,6 +5,7 @@ import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.ftc.ParallelOTOSEncoder;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
@@ -39,6 +40,7 @@ public class TeleOp extends NextOpMode {
     public Follower follower;
     public final PoseFactory start = PoseFactory.radians();
     private final Pose startPose = start.of(133.34375,7.5,Math.toRadians(90));
+    public Pose poseResetOpostFLower = new Pose(133.1,106.4,Math.toRadians(180));
     public Pose poseReset = new Pose (106, 7.5, Math.toRadians(90));
     public static double offSetTurret = 60;
     private Servo servo1;
@@ -123,6 +125,9 @@ public class TeleOp extends NextOpMode {
 
         if(gamepad1.a || gamepad2.a){
             follower.setPose(poseReset);
+        }
+        if (gamepad1.b || gamepad2.b){
+            follower.setPose(poseResetOpostFLower);
         }
 
 
