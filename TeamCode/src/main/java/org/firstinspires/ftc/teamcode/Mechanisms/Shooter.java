@@ -33,7 +33,7 @@ public class Shooter implements Mechanism {
     public static double kd = 0.000000;
     public static double kv = 0.000034;
     public static double ks = 0.00055;
-    public static double ka = 0.000;
+    public static double ka = 0.008;
     double xHive = 84;
     double yHive = 70.94;
     public final PoseFactory start = PoseFactory.radians();

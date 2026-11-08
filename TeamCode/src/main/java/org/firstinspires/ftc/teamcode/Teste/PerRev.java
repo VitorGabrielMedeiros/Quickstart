@@ -20,6 +20,7 @@ public class PerRev extends NextOpMode {
     private final NextMotor shooter = new NextMotor("shooter", Degrees.of(1.0));
     private double initialPosition = 0;
     private boolean previousA = false;
+    public static double teste = 0.0;
 
     public PerRev(Robot robot) {
         super(robot);
@@ -43,9 +44,10 @@ public class PerRev extends NextOpMode {
         }
 
         previousA = gamepad1.a;
-                Telemetry.log("Posicao atual", currentPosition);
+        Telemetry.log("Posicao atual", currentPosition);
         Telemetry.log("Ticks desde zero", ticks);
         Telemetry.log("Ticks absolutos", Math.abs(ticks));
+        Telemetry.log("Teste", teste);
         Telemetry.update();
     }
 }

@@ -13,6 +13,8 @@ import dev.nextftc.robot.Mechanism;
 
 public class Transfer implements Mechanism {
 
+    public double vel;
+
 
 
     private final NextMotor motor = new NextMotor("transfer");
@@ -29,6 +31,10 @@ public class Transfer implements Mechanism {
 
     public void setPower(double power){
         motor.setThrottle(power);
+    }
+
+    public Command shoot(){
+        return infinite(() -> motor.setThrottle(vel));
     }
     public  Command in(){
         return  infinite( () -> motor.setThrottle(1.0));
@@ -47,8 +53,14 @@ public class Transfer implements Mechanism {
         return SensorC.getColor();
     }
 
+    public void setVel(double vel){
+        this.vel = vel;
+    }
+
     @Override
     public void periodic() {
+
+
 
     }
 }

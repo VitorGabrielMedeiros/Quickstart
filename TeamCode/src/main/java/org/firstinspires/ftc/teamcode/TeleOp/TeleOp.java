@@ -4,8 +4,10 @@ import static com.pedropathing.ivy.groups.Groups.loop;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 
+//import com.acmerobotics.dashboard.config.Config;
+//import com.acmerobotics.roadrunner.ftc.ParallelOTOSEncoder;
+//import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.ftc.ParallelOTOSEncoder;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
@@ -42,7 +44,7 @@ public class TeleOp extends NextOpMode {
     private final Pose startPose = start.of(133.34375,7.5,Math.toRadians(90));
     public Pose poseResetOpostFLower = new Pose(133.1,106.4,Math.toRadians(180));
     public Pose poseReset = new Pose (106, 7.5, Math.toRadians(90));
-    public static double offSetTurret = 60;
+    public static double offSetTurret = 0;
     private Servo servo1;
     private Servo servo2;
 
@@ -140,6 +142,12 @@ public class TeleOp extends NextOpMode {
             yHive = 55;
         }
 
+        if (follower.velocity().vx < 25 && follower.velocity().vy < 25){
+            robot.getTransfer().setVel(1);
+        } else {
+            robot.getTransfer().setVel(0);
+        }
+
         robot.getShooter().setSetPoint(autoshoot(currentDistance));
 
         sensorC.update();
@@ -209,7 +217,7 @@ public class TeleOp extends NextOpMode {
                 robot.getLock().lock(),
                 delayServo,
                 robot.getFlower().ServoShoot().with(robot.getFlower().ServoShoot1()),
-                robot.getIntake().in().with(robot.getTransfer().in()),
+                robot.getIntake().in().with(robot.getTransfer().shoot()),
                 delay,
                 robot.getIntake().stop().with(robot.getTransfer().stop()),
                 robot.getFlower().levantado().with(robot.getFlower().levantado1())
@@ -222,7 +230,7 @@ public class TeleOp extends NextOpMode {
         );
 
 
-        gp2.rightBumper().toggleOnTrue(Shoot.with(robot.getIntake().in()).with(robot.getTransfer().in()));
+        gp2.rightBumper().toggleOnTrue(Shoot.with(robot.getIntake().in()).with(robot.getTransfer().shoot()));
         gp2.rightBumper().toggleOnFalse(noShoot.with(robot.getIntake().stop()).with(robot.getTransfer().stop()));
 
 

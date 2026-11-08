@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
+
 @Config
 @TeleOp(name = "servo", group = "LinearOpMode")
 public class ServoTeste extends LinearOpMode {

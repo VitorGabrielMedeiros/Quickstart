@@ -7,13 +7,17 @@ import dev.nextftc.robot.Mechanism;
 
 public class Intake implements Mechanism {
 
-
+    public double velshot;
 
     private final NextMotor motor = new NextMotor("intake");
 
     public double getVel(){
         double vel = motor.getEncoderVelocity().getMagnitude();
         return vel;
+    }
+
+    public Command shoot(){
+        return infinite(() -> motor.setThrottle(velshot));
     }
 
     public Command in() {
@@ -25,6 +29,10 @@ public class Intake implements Mechanism {
 
     public Command stop() {
         return instant(() -> motor.setThrottle(0.0));
+    }
+
+    public void setVel(double vel){
+        this.velshot = vel;
     }
 }
 
