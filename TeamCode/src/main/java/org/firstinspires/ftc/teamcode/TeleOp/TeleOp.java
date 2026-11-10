@@ -137,10 +137,10 @@ public class TeleOp extends NextOpMode {
             }
         }
 
-        if(gamepad1.a || gamepad2.a){
+        if(gamepad1.y || gamepad2.y){
             follower.setPose(poseReset);
         }
-        if (gamepad1.b || gamepad2.b){
+        if (gamepad1.x || gamepad2.x){
             follower.setPose(poseResetOpostFLower);
         }
         if (gamepad1.right_bumper){
@@ -175,7 +175,7 @@ public class TeleOp extends NextOpMode {
         double shootingsotm = poseSotm.distance(new Pose(xHive, yHive));
 
         // Aumentar offset
-        if (gamepad1.dpad_up && !lastDpadUp) {
+        if (gamepad2.dpad_up && !lastDpadUp) {
             offSetShooter += 10;
         }
 
@@ -238,8 +238,8 @@ public class TeleOp extends NextOpMode {
         gp2.leftBumper().toggleOnFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
 
         //inverse
-        gp2.y().whileTrue(robot.getIntake().out().with(robot.getTransfer().out()));
-        gp2.y().toggleOnFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
+        gp2.b().whileTrue(robot.getIntake().out().with(robot.getTransfer().out()));
+        gp2.b().toggleOnFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
 
 
 
