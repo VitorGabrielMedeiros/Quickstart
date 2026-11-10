@@ -38,7 +38,7 @@ public class TeleOp extends NextOpMode {
     public Follower follower;
     public final PoseFactory start = PoseFactory.radians();
     private final Pose startPose = start.of(133.34375,7.5,Math.toRadians(90));
-    public Pose poseResetOpostFLower = new Pose(133.1,106.4,Math.toRadians(180));
+    public Pose poseResetOpostFLower = new Pose(58.6,133.9,Math.toRadians(270));
     public Pose poseReset = new Pose (106, 7.5, Math.toRadians(90));
     public Pose poseSotm;
     private Servo servo1;
@@ -72,6 +72,7 @@ public class TeleOp extends NextOpMode {
     public static double movVelMax = 0.2;
     public static double quantidadeG = 0.9;
     public static double timeServo = 100;
+    public static double timeInverseIntake = 50;
 
 
     public static double posMaior = 2020;
@@ -159,7 +160,7 @@ public class TeleOp extends NextOpMode {
             xHive = 84;
             yHive = 86.5;
         } else {
-            xHive = 81.5;
+            xHive = 84;
             yHive = 55;
         }
 
@@ -211,6 +212,7 @@ public class TeleOp extends NextOpMode {
         Telemetry.log("distancia", currentDistance);
         Telemetry.log("x", xRobot);
         Telemetry.log("y", yRobot);
+        Telemetry.log("heading", heading);
         Telemetry.log("sensor", sensorC.getColor().getGreen());
         Telemetry.update();
     }
@@ -238,7 +240,11 @@ public class TeleOp extends NextOpMode {
         gp2.leftBumper().toggleOnFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
 
         //inverse
-        gp2.b().whileTrue(robot.getIntake().out().with(robot.getTransfer().out()));
+        gp2.b().toggleOnTrue(robot.getIntake().out().with(robot.getTransfer().out()
+                .then(waitMs(timeInverseIntake))
+                .then(robot.getIntake().in()).with(robot.getTransfer().in())
+                .then(waitMs(timeInverseIntake))
+                .then(robot.getIntake().stop()).with(robot.getTransfer().stop())));
         gp2.b().toggleOnFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
 
 
@@ -269,8 +275,7 @@ public class TeleOp extends NextOpMode {
 
         gp2.rightBumper().toggleOnTrue(robot.getLock().lock()
                 .then(waitMs(timeServo))
-                .then(robot.getIntake().shoot()
-                        .with(robot.getTransfer().shoot().with(robot.getFlower().ServoShoot().with(robot.getFlower().ServoShoot1())))
+                .then(robot.getIntake().shoot().with(robot.getTransfer().shoot().with(robot.getFlower().ServoShoot().with(robot.getFlower().ServoShoot1())))
                 .then(delay)));
         gp2.rightBumper().toggleOnFalse(noShoot.with(robot.getIntake().stop()).with(robot.getTransfer().stop().with(robot.getFlower().levantado1().with(robot.getFlower().levantado()))));
 
