@@ -180,6 +180,10 @@ public class TeleOp extends NextOpMode {
             offSetShooter += 10;
         }
 
+        if (gamepad2.dpad_up && !lastDpadUp) {
+            offSetShooter += 10;
+        }
+
         // Diminuir offset
         if (gamepad1.dpad_down && !lastDpadDown) {
             offSetShooter -= 10;

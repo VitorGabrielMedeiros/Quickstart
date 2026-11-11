@@ -20,6 +20,8 @@ import static org.firstinspires.ftc.teamcode.Autonomous.AutoPath.vaiFlower3S2;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPath.volta3S;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.startPose3S;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.voltaIntakeg3S;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp.timeInverseIntake;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp.timeServo;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
@@ -67,6 +69,8 @@ public class Auto3Solo extends NextOpMode {
     public double anguloTotal;
     public double flywheel;
     Command delay = waitMs(300);
+    Command delay1 = waitMs(2400);
+
     Command delayServo = waitMs(100);
 
     public static double posMaior = 2020;
@@ -76,6 +80,8 @@ public class Auto3Solo extends NextOpMode {
         return (-flywheel-offSetShooter);
     }
 
+
+
     public double sotm(double distanciasotm){
         return (0.000534998 * Math.pow(distanciasotm, 2)-0.0419473 * distanciasotm+1.28217);
     }
@@ -84,20 +90,22 @@ public class Auto3Solo extends NextOpMode {
         return Math.max(min, Math.min(max, valor));
     }
 
-    Command Shoot = sequential(
-            robot.getLock().lock(),
-            delayServo,
-            robot.getFlower().ServoShoot().with(robot.getFlower().ServoShoot1()),
-            robot.getIntake().shoot().with(robot.getTransfer().shoot()),
-            delay,
-            robot.getIntake().stop().with(robot.getTransfer().stop()),
-            robot.getFlower().levantado().with(robot.getFlower().levantado1())
-    );
-
+    private Command shoot() {
+        return sequential(
+                (robot.getLock().lock()
+                        .then(waitMs(timeServo))
+                        .then(robot.getIntake().shoot().with(robot.getTransfer().shoot().with(robot.getFlower().ServoShoot().with(robot.getFlower().ServoShoot1())))
+                                .then(delay))));
+    }
 
     private Command auto(){
         return sequential(
+//                delay1,
+//                robot.getIntake().in().with(robot.getTransfer().in()).with(robot.getLock().lock()),
+//                delay,
+//                robot.getIntake().out().with(robot.getTransfer().out()).with(robot.getLock().unlock()),
                 follow(follower, intake13S()),
+
                 follow(follower, volta3S()),
 
                 follow(follower, bate3S()),
@@ -137,24 +145,6 @@ public class Auto3Solo extends NextOpMode {
 
     @Override
     public void start(){
-        robot.getLock().unlock().schedule();
-
-        servo1 = hardwareMap.get(Servo.class, "servo1");
-        servo2 = hardwareMap.get(Servo.class, "servo2");
-
-        follower = Constants.create(hardwareMap);
-
-        follower.setPose(startPose3S);
-        follower.update();
-
-        ((ServoImplEx) servo1).setPwmRange(
-                new PwmControl.PwmRange(posMenor, posMaior)
-        );
-        ((ServoImplEx) servo2).setPwmRange(
-                new PwmControl.PwmRange(posMenor, posMaior)
-        );
-
-
 
         schedule(auto());
     }
@@ -164,29 +154,6 @@ public class Auto3Solo extends NextOpMode {
         follower.update();
         Scheduler.execute();
 
-        xRobot = follower.pose().x();
-        yRobot = follower.pose().y();
-        heading = Math.toDegrees(follower.pose().heading());
-
-        //turretAngle = robot.getTurret().getTurretAngleDegrees();
-
-        delta = heading - lastHeading;
-
-        if (delta < -180) {
-            voltas = voltas + 1;
-        }
-        if (delta > 180) {
-            voltas = voltas - 1;
-        }
-
-        anguloTotal = heading + (voltas * 360);
-
-        sensorC.update();
-
-        double flightTime = sotm(currentDistance);
-
-
-        // Escolhe o alvo
         if (yRobot > 70.75) {
             xHive = 84;
             yHive = 86.5;
@@ -195,38 +162,85 @@ public class Auto3Solo extends NextOpMode {
             yHive = 55;
         }
 
-        currentDistance = clamp(follower.pose().distance(new Pose(xHive, yHive)),23,80);
-
-        xHive -= follower.velocity().vx * flightTime;
-        yHive -= follower.velocity().vy * flightTime;
-
-        double predictedX = xRobot + follower.velocity().vx * flightTime;
-        double predictedY = yRobot + follower.velocity().vy * flightTime;
-        poseSotm = new Pose((predictedX), (predictedY), heading);
-
-        double shootingsotm = poseSotm.distance(new Pose(xHive, yHive));
-
-        if (follower.velocity().vx < 25 && follower.velocity().vy < 25){
-            robot.getTransfer().setVel(1);
-            robot.getIntake().setVel(-1);
-        } else {
-            robot.getTransfer().setVel(0);
-            robot.getIntake().setVel(0);
-        }
-
-        robot.getShooter().setSetPoint(autoshoot(shootingsotm));
-
+        robot.getShooter().setSetPoint(autoshoot(follower.pose().distance(new Pose(xHive, yHive))));
         robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);
 
         servo1.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0 ,1));
         servo2.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0, 1));
 
-        lastHeading = heading;
-
-        Telemetry.log("distancia", currentDistance);
-        Telemetry.log("x", xRobot);
-        Telemetry.log("y", yRobot);
-        Telemetry.log("sensor", sensorC.getColor().getGreen());
-        Telemetry.update();
+//        xRobot = follower.pose().x();
+//        yRobot = follower.pose().y();
+//        heading = Math.toDegrees(follower.pose().heading());
+//
+//        //turretAngle = robot.getTurret().getTurretAngleDegrees();
+//
+//        delta = heading - lastHeading;
+//
+//        if (delta < -180) {
+//            voltas = voltas + 1;
+//        }
+//        if (delta > 180) {
+//            voltas = voltas - 1;
+//        }
+//
+//        anguloTotal = heading + (voltas * 360);
+//
+//        sensorC.update();
+//
+//        double flightTime = sotm(currentDistance);
+//
+//
+//        // Escolhe o alvo
+//        if (yRobot > 70.75) {
+//            xHive = 84;
+//            yHive = 86.5;
+//        } else {
+//            xHive = 81.5;
+//            yHive = 55;
+//        }
+//
+//        currentDistance = clamp(follower.pose().distance(new Pose(xHive, yHive)),23,80);
+//
+//        xHive -= follower.velocity().vx * flightTime;
+//        yHive -= follower.velocity().vy * flightTime;
+//
+//        double predictedX = xRobot + follower.velocity().vx * flightTime;
+//        double predictedY = yRobot + follower.velocity().vy * flightTime;
+//        poseSotm = new Pose((predictedX), (predictedY), heading);
+//
+//        double shootingsotm = poseSotm.distance(new Pose(xHive, yHive));
+//
+//        if (follower.velocity().vx < 25 && follower.velocity().vy < 25){
+//            robot.getTransfer().setVel(1);
+//            robot.getIntake().setVel(-1);
+//        } else {
+//            robot.getTransfer().setVel(0);
+//            robot.getIntake().setVel(0);
+//        }
+//
+//        robot.getShooter().setSetPoint(autoshoot(shootingsotm));
+//
+//        robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);
+//
+//        servo1.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0 ,1));
+//        servo2.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0, 1));
+//
+//        lastHeading = heading;
+//
+//        Telemetry.log("distancia", currentDistance);
+//        Telemetry.log("x", xRobot);
+//        Telemetry.log("y", yRobot);
+//        Telemetry.log("sensor", sensorC.getColor().getGreen());
+//        Telemetry.update();
     }
+
+    public Command intakeGarden(){
+        return follow(follower, intake13S())
+                .with(robot.getIntake().in()).with(robot.getTransfer().in()
+                        .then(follow(follower, volta3S()))
+                        .then(follow(follower, bate3S()))
+                        .then(robot.getIntake().in()).with(robot.getTransfer().in()));
+    }
+
+
 }
