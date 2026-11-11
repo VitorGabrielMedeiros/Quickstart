@@ -71,7 +71,7 @@ public class Auto3Solo extends NextOpMode {
     Command delay = waitMs(300);
     Command delay1 = waitMs(2400);
 
-    Command delayServo = waitMs(100);
+    Command delayServo = waitMs(1500);
 
     public static double posMaior = 2020;
     public static double posMenor = 500;
@@ -93,18 +93,41 @@ public class Auto3Solo extends NextOpMode {
     private Command shoot() {
         return sequential(
                 (robot.getLock().lock()
-                        .then(waitMs(timeServo))
-                        .then(robot.getIntake().shoot().with(robot.getTransfer().shoot().with(robot.getFlower().ServoShoot().with(robot.getFlower().ServoShoot1())))
-                                .then(delay))));
+                        .then(delayServo)
+                        .then(robot.getIntake().in().with(robot.getTransfer().in().with(robot.getFlower().ServoShoot().with(robot.getFlower().ServoShoot1()))))
+                        .then(delayServo).then(robot.getLock().unlock().with(robot.getFlower().levantado()).with(robot.getFlower().levantado1()).with(robot.getIntake().stop()).with(robot.getTransfer().stop()).then(delay))));
     }
 
-    public Command intakeGarden(){
-        return follow(follower, intake13S())
-                .with(robot.getIntake().in()).with(robot.getTransfer().in()
+    private Command flower() {
+        return sequential(
+                (robot.getFlower().flower().with(robot.getFlower().flower1())
+                        .then(delay)
+                        .then(robot.getLock().lock().with (robot.getIntake().in().with(robot.getTransfer().in()))))
+                        .then(delayServo).then(robot.getLock().unlock().with(robot.getIntake().stop()).with(robot.getTransfer().stop()).then(delay)));
+    }
+
+    private Command intakeGarden(){
+        return sequential( follow(follower, intake13S())
+                .with(robot.getIntake().in().with(robot.getTransfer().in()
                         .then(follow(follower, volta3S()))
                         .then(follow(follower, bate3S()))
-                        .then(robot.getIntake().in()).with(robot.getTransfer().in()));
+                        .then(delay.with(robot.getIntake().stop()).with(robot.getTransfer().stop()))
+        )));
     }
+    private Command shootFlower(){
+        return sequential (follow(follower, goShoot3S1())
+                .then(shoot())
+                .then(flower().then(follow(follower, goFlower3S1()))))
+                .then(follow(follower, goShoot3S2()))
+                .then(robot.getFlower().levantado()).with(robot.getFlower().levantado1());
+    }
+
+//    private Command intakeMeio(){
+//        return follow(follower, goIntakeM3S())
+//                .then(robot.getIntake().in().with(robot.getTransfer().in()))
+//                .then(follow(follower, intakeM3S()))
+//                .then(follow(follower, goShoot3S3()));
+//    }
 
 //    private Command auto(){
 //        return sequential(
@@ -156,7 +179,8 @@ public class Auto3Solo extends NextOpMode {
 
         schedule(
                 shoot(),
-                intakeGarden()
+                intakeGarden(),
+                shootFlower()
         );
     }
 
