@@ -269,6 +269,7 @@ public class Auto3Solo extends NextOpMode {
 //        Telemetry.update();
     }
 
+    //ola
 
 
 }
