@@ -98,40 +98,48 @@ public class Auto3Solo extends NextOpMode {
                                 .then(delay))));
     }
 
-    private Command auto(){
-        return sequential(
-//                delay1,
-//                robot.getIntake().in().with(robot.getTransfer().in()).with(robot.getLock().lock()),
-//                delay,
-//                robot.getIntake().out().with(robot.getTransfer().out()).with(robot.getLock().unlock()),
-                follow(follower, intake13S()),
-
-                follow(follower, volta3S()),
-
-                follow(follower, bate3S()),
-
-                follow(follower, goShoot3S1()),
-
-                follow(follower, goFlower3S1()),
-
-                follow(follower, goShoot3S2()),
-
-                follow(follower, goIntakeM3S()),
-
-                follow(follower, intakeM3S()),
-
-                follow(follower, goShoot3S3()),
-
-                follow(follower, vaiFlower3S2()),
-
-                follow(follower, intakeFlower3S2()),
-
-                follow(follower, goShoot3S4()),
-
-                follow(follower, pathPark3S())
-
-        );
+    public Command intakeGarden(){
+        return follow(follower, intake13S())
+                .with(robot.getIntake().in()).with(robot.getTransfer().in()
+                        .then(follow(follower, volta3S()))
+                        .then(follow(follower, bate3S()))
+                        .then(robot.getIntake().in()).with(robot.getTransfer().in()));
     }
+
+//    private Command auto(){
+//        return sequential(
+////                delay1,
+////                robot.getIntake().in().with(robot.getTransfer().in()).with(robot.getLock().lock()),
+////                delay,
+////                robot.getIntake().out().with(robot.getTransfer().out()).with(robot.getLock().unlock()),
+//                follow(follower, intake13S()),
+//
+//                follow(follower, volta3S()),
+//
+//                follow(follower, bate3S()),
+//
+//                follow(follower, goShoot3S1()),
+//
+//                follow(follower, goFlower3S1()),
+//
+//                follow(follower, goShoot3S2()),
+//
+//                follow(follower, goIntakeM3S()),
+//
+//                follow(follower, intakeM3S()),
+//
+//                follow(follower, goShoot3S3()),
+//
+//                follow(follower, vaiFlower3S2()),
+//
+//                follow(follower, intakeFlower3S2()),
+//
+//                follow(follower, goShoot3S4()),
+//
+//                follow(follower, pathPark3S())
+//
+//        );
+//    }
 
 
 
@@ -146,7 +154,10 @@ public class Auto3Solo extends NextOpMode {
     @Override
     public void start(){
 
-        schedule(auto());
+        schedule(
+                shoot(),
+                intakeGarden()
+        );
     }
 
     @Override
@@ -165,8 +176,8 @@ public class Auto3Solo extends NextOpMode {
         robot.getShooter().setSetPoint(autoshoot(follower.pose().distance(new Pose(xHive, yHive))));
         robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);
 
-        servo1.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0 ,1));
-        servo2.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0, 1));
+//        servo1.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0 ,1));
+//        servo2.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0, 1));
 
 //        xRobot = follower.pose().x();
 //        yRobot = follower.pose().y();
@@ -234,13 +245,6 @@ public class Auto3Solo extends NextOpMode {
 //        Telemetry.update();
     }
 
-    public Command intakeGarden(){
-        return follow(follower, intake13S())
-                .with(robot.getIntake().in()).with(robot.getTransfer().in()
-                        .then(follow(follower, volta3S()))
-                        .then(follow(follower, bate3S()))
-                        .then(robot.getIntake().in()).with(robot.getTransfer().in()));
-    }
 
 
 }
