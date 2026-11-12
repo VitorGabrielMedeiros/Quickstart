@@ -17,19 +17,20 @@ public class Intake implements Mechanism {
     }
 
     public Command shoot(){
-        return infinite(() -> motor.setThrottle(velshot));
+        return instant(() -> motor.setThrottle(velshot));
     }
 
     public Command in() {
-        return infinite(() -> motor.setThrottle(-1.0));
+        return instant(() -> motor.setThrottle(-1.0));
     }
 
-    public Command out() {return infinite(() -> motor.setThrottle(1.0));
+    public Command out() {return instant(() -> motor.setThrottle(1.0));
     }
 
     public Command stop() {
         return instant(() -> motor.setThrottle(0.0));
     }
+    public Command NoFivePolen(){return instant(() -> motor.setThrottle(1));}
 
     public void setVel(double vel){
         this.velshot = vel;

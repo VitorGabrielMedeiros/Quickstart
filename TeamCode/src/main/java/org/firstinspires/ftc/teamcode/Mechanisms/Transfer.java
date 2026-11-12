@@ -37,17 +37,18 @@ public class Transfer implements Mechanism {
         return infinite(() -> motor.setThrottle(vel));
     }
     public  Command in(){
-        return  infinite( () -> motor.setThrottle(1.0));
+        return  instant( () -> motor.setThrottle(1.0));
     }
 
 
     public Command out() {
-        return infinite(() -> motor.setThrottle(-1.0));
+        return instant(() -> motor.setThrottle(-1.0));
     }
 
     public Command stop() {
         return instant(() -> motor.setThrottle(0.0));
     }
+    public Command NoFivePolen(){return instant(() -> motor.setThrottle(-1));}
 
     public NextColor getsensorC(){
         return SensorC.getColor();

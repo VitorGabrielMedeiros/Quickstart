@@ -38,7 +38,7 @@ public class TeleOp extends NextOpMode {
     public Follower follower;
     public final PoseFactory start = PoseFactory.radians();
     private final Pose startPose = start.of(133.34375,7.5,Math.toRadians(90));
-    public Pose poseResetOpostFLower = new Pose(58.6,133.9,Math.toRadians(270));
+    public Pose poseResetOpostFLower = new Pose(58.6,133.9,Math.toRadians(180));
     public Pose poseReset = new Pose (106, 7.5, Math.toRadians(90));
     public Pose poseSotm;
     private Servo servo1;
@@ -46,6 +46,8 @@ public class TeleOp extends NextOpMode {
     private boolean lastDpadUp = false;
     private boolean lastDpadDown = false;
     public static double offSetShooter = 40;
+    private boolean servoFixo = false;
+    private boolean lastButtonA = false;
 
 //    private final Servo servo1 = Servo("servo1");
 //    private final Servo servo2 = Servo("servo2");
@@ -66,6 +68,7 @@ public class TeleOp extends NextOpMode {
     public static double maxMov = 0.0;
     public double turretAngle;
     CommandGamepad gp2 = new CommandGamepad(gamepad2);
+    CommandGamepad gp1 = new CommandGamepad(gamepad1);
     Command delay = waitMs(300);
     Command delayServo = waitMs(100);
     public static double movVelMin = -0.2;
@@ -144,7 +147,7 @@ public class TeleOp extends NextOpMode {
         if (gamepad1.x || gamepad2.x){
             follower.setPose(poseResetOpostFLower);
         }
-        if (gamepad1.right_bumper){
+        if (gamepad2.right_bumper){
             minMov = movVelMin;
             maxMov = movVelMax;
         } else {
@@ -157,7 +160,7 @@ public class TeleOp extends NextOpMode {
 
         // Escolhe o alvo
         if (yRobot > 70.75) {
-            xHive = 84;
+            xHive = 81.5;
             yHive = 86.5;
         } else {
             xHive = 84;
@@ -195,9 +198,20 @@ public class TeleOp extends NextOpMode {
         } else {
             robot.getTransfer().setVel(0);
             robot.getIntake().setVel(0);
+
+        }if (gamepad2.a && !lastButtonA) {
+            servoFixo = !servoFixo;
         }
 
-        // Atualiza o estado dos botões
+        if (servoFixo) {
+            servo1.setPosition(0.5);
+            servo2.setPosition(0.5);
+        } else {
+            servo1.setPosition(clamp(1 - robot.getTurret().getTurretServo(), 0, 1));
+            servo2.setPosition(clamp(1 - robot.getTurret().getTurretServo(), 0, 1));
+        }
+
+        lastButtonA = gamepad2.a;
         lastDpadUp = gamepad1.dpad_up;
         lastDpadDown = gamepad1.dpad_down;
 
@@ -205,11 +219,8 @@ public class TeleOp extends NextOpMode {
 
         robot.getTurret().moveServos(xRobot, yRobot, xHive, yHive, anguloTotal);
 
-        servo1.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0 ,1));
-        servo2.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0, 1));
-
-
-
+//        servo1.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0 ,1));
+//        servo2.setPosition(clamp(1-(robot.getTurret().getTurretServo()), 0, 1));
 
         lastHeading = heading;
 
@@ -244,11 +255,7 @@ public class TeleOp extends NextOpMode {
         gp2.leftBumper().toggleOnFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
 
         //inverse
-        gp2.b().toggleOnTrue(robot.getIntake().out().with(robot.getTransfer().out()
-                .then(waitMs(timeInverseIntake))
-                .then(robot.getIntake().in()).with(robot.getTransfer().in())
-                .then(waitMs(timeInverseIntake))
-                .then(robot.getIntake().stop()).with(robot.getTransfer().stop())));
+        gp2.b().whileTrue(robot.getIntake().out().with(robot.getTransfer().out()));
         gp2.b().toggleOnFalse(robot.getIntake().stop().with(robot.getTransfer().stop()));
 
 
@@ -284,30 +291,11 @@ public class TeleOp extends NextOpMode {
         gp2.rightBumper().toggleOnFalse(noShoot.with(robot.getIntake().stop()).with(robot.getTransfer().stop().with(robot.getFlower().levantado1().with(robot.getFlower().levantado()))));
 
 
-        gp2.leftTrigger().isOver(0.000001).whileTrue(robot.getFlower().flower().with(robot.getFlower().flower1()));
-        gp2.leftTrigger().isOver(0.000001).whileFalse(robot.getFlower().levantado().with(robot.getFlower().levantado1()));
+        gp1.leftTrigger().isOver(0.000001).whileTrue(robot.getFlower().flower().with(robot.getFlower().flower1()));
+        gp1.leftTrigger().isOver(0.000001).whileFalse(robot.getFlower().levantado().with(robot.getFlower().levantado1()));
 
         gp2.rightTrigger().isOver(0.000001).whileTrue(robot.getFlower().defense().with(robot.getFlower().defense1()));
         gp2.rightTrigger().isOver(0.000001).whileFalse(robot.getFlower().levantado().with(robot.getFlower().levantado1()));
-
-
-
-
-
-//        if (gamepad1.a){
-//
-//        }
-        //gp2.rightBumper().whileFalse(robot.getIntake().stop().with(robot.getTransfer().stop().with(robot.getLock().lock())));
-
-
-
-
-
-
-
-
-
-
     }
 }
 
