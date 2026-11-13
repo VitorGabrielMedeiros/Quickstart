@@ -7,6 +7,7 @@ import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPath.bate3S;
+import static org.firstinspires.ftc.teamcode.Autonomous.AutoPath.flowerIntakeNovo;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPath.goFlower3S1;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPath.goIntakeM3S;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPath.goShoot3S1;
@@ -73,7 +74,10 @@ public class Auto3Solo extends NextOpMode {
     Command delay = waitMs(500);
     Command delay1 = waitMs(2400);
 
-    Command delayServo = waitMs(2500);
+    Command delayServo = waitMs(1800);
+    Command delayShoot = waitMs(900);
+    Command delay3 = waitMs(2300);
+
 
     public static double posMaior = 2020;
     public static double posMenor = 500;
@@ -150,7 +154,7 @@ public class Auto3Solo extends NextOpMode {
                                         robot.getTransfer().in(),
                                         robot.getFlower().ServoShoot(),
                                         robot.getFlower().ServoShoot1())),
-                delayServo,
+                delayShoot,
                 servo1(0.3).with(servo2(0.3)),
                 robot.getLock().unlock(),
                 delay
@@ -172,9 +176,8 @@ public class Auto3Solo extends NextOpMode {
                         .then(follow(follower, goShoot3S1())),
                 delayServo,
                 robot.getLock().lock(),
-                delayServo
+                delay3
                         .raceWith(
-                                delayServo,
                                 robot.getIntake().in().with(
                                         robot.getTransfer().in(),
                                         robot.getLock().lock(),
@@ -188,20 +191,31 @@ public class Auto3Solo extends NextOpMode {
                                         robot.getTransfer().stop(),
                                         robot.getFlower().levantado(),
                                         robot.getFlower().levantado1())),
+                delayShoot,
+                servo1(0.28).with(servo2(0.28))
+                .then(follow(follower, goFlower3S1())),
                 delay
-                        .then(follow(follower, goFlower3S1()).with(robot.getFlower().flower().with(robot.getFlower().flower1()).with(robot.getIntake().in()).with(robot.getTransfer().in()).with(robot.getLock().lock())))
-                        .then(follow(follower, goShoot3S2()))
-
-                        .then(follow(follower, goIntakeM3S()))
-                        .then(follow(follower, intakeM3S()))
-                        .then(follow(follower, goShoot3S3()))
-
-                        .then(follow(follower, vaiFlower3S2()))
-                        .then(follow(follower, intakeFlower3S2()))
-                        .then(follow(follower, goShoot3S4()))
-
-                        .then(follow(follower, pathPark3S()))
-
+                        .raceWith(
+                                        robot.getFlower().flower(),
+                                        robot.getFlower().flower1()),
+                                        robot.getLock().lock(),
+                delay
+                        .then(follow(follower,flowerIntakeNovo())),
+                delay
+                        .raceWith(
+                                robot.getIntake().in().with(
+                                        robot.getTransfer().in()
+                        )),
+                delayServo,
+                robot.getLock().unlock()
+                .raceWith(
+                        robot.getIntake().stop().with(
+                                robot.getTransfer().stop())
+                )
+                        .then(follow(follower, pathPark3S())
+                                .with(
+                                        robot.getFlower().levantado(),
+                                        robot.getFlower().levantado1()))
         );
     }
 

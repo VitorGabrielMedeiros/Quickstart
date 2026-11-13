@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.bateIntakeG3S;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.flower3S1;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.flower3S1Curve;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.flower3S2;
+import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.flowerLinha;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.goFlower3S2;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.goIntakeA3S;
 import static org.firstinspires.ftc.teamcode.Autonomous.AutoPose.intakeA3S;
@@ -43,7 +44,10 @@ public class AutoPath  {
         return curve(bateIntakeG3S,shoot3S1Curve,shoot3S1).linear(bateIntakeG3S, shoot3S1);
     }
     public static final Path goFlower3S1() {
-        return curve(shoot3S1,flower3S1Curve,flower3S1).linear(shoot3S1, flower3S1);
+        return line(shoot3S1,flowerLinha).linear(shoot3S1, flowerLinha);
+    }
+    public static final Path flowerIntakeNovo() {
+        return line(flowerLinha, flower3S1).linear(flowerLinha, flower3S1);
     }
     public static final Path goShoot3S2() {
         return curve(flower3S1,shoot3S2Curve,shoot3S2).linear(flower3S1, shoot3S2);
@@ -67,7 +71,7 @@ public class AutoPath  {
         return line(flower3S2,shoot3S4).linear(flower3S2, shoot3S4);
     }
     public static final Path pathPark3S() {
-        return line(shoot3S4,park3S).linear(shoot3S4,park3S);
+        return line(flower3S1,park3S).linear(flower3S1,park3S);
     }
 
     // ---AUTO 2 TIP SOLO---

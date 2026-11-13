@@ -45,7 +45,12 @@ public class TeleOp extends NextOpMode {
     private Servo servo2;
     private boolean lastDpadUp = false;
     private boolean lastDpadDown = false;
-    public static double offSetShooter = 40;
+    private boolean lastDpadLeft = false;
+    private boolean lastDpadRight = false;
+    private boolean lastX =  false;
+    public static double offSetShooter = 0;
+
+    public static double offSetTurret = 0.0;
     private boolean servoFixo = false;
     private boolean lastButtonA = false;
 
@@ -144,9 +149,7 @@ public class TeleOp extends NextOpMode {
         if(gamepad1.y || gamepad2.y){
             follower.setPose(poseReset);
         }
-        if (gamepad1.x || gamepad2.x){
-            follower.setPose(poseResetOpostFLower);
-        }
+
         if (gamepad2.right_bumper){
             minMov = movVelMin;
             maxMov = movVelMax;
@@ -183,13 +186,21 @@ public class TeleOp extends NextOpMode {
             offSetShooter += 10;
         }
 
-        if (gamepad2.dpad_up && !lastDpadUp) {
-            offSetShooter += 10;
+        // Diminuir offset
+        if (gamepad2.dpad_down && !lastDpadDown) {
+            offSetShooter -= 10;
+        }
+        if (gamepad2.x && !lastX) {
+            offSetTurret = 0;
         }
 
-        // Diminuir offset
-        if (gamepad1.dpad_down && !lastDpadDown) {
-            offSetShooter -= 10;
+
+        if (gamepad2.dpad_left && !lastDpadLeft) {
+            offSetTurret -= 0.025;
+        }
+
+        if (gamepad2.dpad_right && !lastDpadRight) {
+            offSetTurret += 0.025;
         }
 
         if (follower.velocity().vx < 25 && follower.velocity().vy < 25){
@@ -207,13 +218,16 @@ public class TeleOp extends NextOpMode {
             servo1.setPosition(0.5);
             servo2.setPosition(0.5);
         } else {
-            servo1.setPosition(clamp(1 - robot.getTurret().getTurretServo(), 0, 1));
-            servo2.setPosition(clamp(1 - robot.getTurret().getTurretServo(), 0, 1));
+            servo1.setPosition(clamp(1 - robot.getTurret().getTurretServo(), 0, 1) -offSetTurret);
+            servo2.setPosition(clamp(1 - robot.getTurret().getTurretServo(), 0, 1)-offSetTurret);
         }
 
         lastButtonA = gamepad2.a;
-        lastDpadUp = gamepad1.dpad_up;
-        lastDpadDown = gamepad1.dpad_down;
+        lastDpadUp = gamepad2.dpad_up;
+        lastDpadDown = gamepad2.dpad_down;
+        lastDpadLeft = gamepad2.dpad_left;
+        lastDpadRight = gamepad2.dpad_right;
+        lastX = gamepad2.x;
 
         robot.getShooter().setSetPoint(autoshoot(shootingsotm));
 
@@ -293,9 +307,6 @@ public class TeleOp extends NextOpMode {
 
         gp1.leftTrigger().isOver(0.000001).whileTrue(robot.getFlower().flower().with(robot.getFlower().flower1()));
         gp1.leftTrigger().isOver(0.000001).whileFalse(robot.getFlower().levantado().with(robot.getFlower().levantado1()));
-
-        gp2.rightTrigger().isOver(0.000001).whileTrue(robot.getFlower().defense().with(robot.getFlower().defense1()));
-        gp2.rightTrigger().isOver(0.000001).whileFalse(robot.getFlower().levantado().with(robot.getFlower().levantado1()));
     }
 }
 
